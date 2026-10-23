@@ -1,0 +1,12 @@
+{
+  "model_version": "sentinelml-20261023T160948Z",
+  "model_path": "models\\sentinelml-20261023T160948Z\\model.joblib",
+  "metadata_path": "models\\sentinelml-20261023T160948Z\\metadata.json",
+  "baseline_path": "models\\sentinelml-20261023T160948Z\\baseline.json",
+  "promoted_at": "2026-10-23T16:09:48.690794+00:00",
+  "promotion_policy": {
+    "metric": "roc_auc",
+    "minimum": 0.6,
+    "observed": 0.9695174118318072
+  }
+}
