@@ -1,620 +1,459 @@
 <div align="center">
+  <img src="docs/assets/sentinelml-banner.png" alt="SentinelML — Build, Validate, Deploy, Monitor" width="100%" />
 
-<img src="docs/assets/sentinelml-banner.png" alt="SentinelML — Build, Validate, Deploy, Monitor" width="100%" />
+  <br />
 
-Reliable ML delivery. Observable model behavior. Evidence-first operations.
+  <h1>SentinelML</h1>
 
-A full-stack machine-learning engineering project for reproducible training, quality-gated model promotion, API inference, feature-drift analysis, and advisory incident investigation.
+  <p><strong>Build reliable machine learning systems. Monitor them with confidence.</strong></p>
 
-<br />
+  <p>
+    An ML engineering platform for reproducible training, quality-gated model promotion,
+    API-based inference, and feature drift monitoring.
+  </p>
 
+  <p>
+    <a href="https://github.com/aayush-borse/sentinelml/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/aayush-borse/sentinelml/ci.yml?style=flat-square&label=CI" alt="CI status" />
+    </a>
+    <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?style=flat-square&logo=scikitlearn&logoColor=white" alt="scikit-learn" />
+    <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License" />
+  </p>
 
-
-
-
-
-
-
+  <p>
+    <a href="#overview">Overview</a> ·
+    <a href="#features">Features</a> ·
+    <a href="#architecture">Architecture</a> ·
+    <a href="#getting-started">Getting Started</a> ·
+    <a href="#api-reference">API Reference</a> ·
+    <a href="#roadmap">Roadmap</a>
+  </p>
 </div>
 
-Overview
+---
+
+## Overview
+
+Machine learning systems need more than a trained model. They need repeatable training workflows, measurable quality checks, reliable inference interfaces, and visibility into changes in incoming data.
+
+**SentinelML brings these engineering concerns into one platform.**
+
+It combines a Python-based ML pipeline with a FastAPI service and monitoring capabilities. Models can be trained through a CLI, evaluated against a configurable quality threshold, served through HTTP endpoints, and monitored for feature distribution changes.
+
+An optional LLM-powered incident analyst can help interpret monitoring results and produce investigation guidance.
+
+### The workflow
+
+```text
+         DATA
+          │
+          ▼
+    Data Validation
+          │
+          ▼
+   Model Training
+          │
+          ▼
+    Model Evaluation
+          │
+          ▼
+  Quality Gate (ROC-AUC)
+          │
+          ▼
+   Model Promotion
+          │
+          ▼
+   API-based Inference
+          │
+          ▼
+   Drift Monitoring
+          │
+          ▼
+   Incident Analysis
+```
+
+> **Current scope:** SentinelML is an engineering project and demonstration platform. Its default dataset is synthetic, so its results demonstrate the workflow rather than establish performance on a real-world problem.
+
+## Features
+
+| Capability               | Description                                                                                  |
+| ------------------------ | -------------------------------------------------------------------------------------------- |
+| Reproducible training    | Train a scikit-learn classification pipeline using configurable settings.                    |
+| Data validation          | Validate input data before model training or inference.                                      |
+| Quality-gated promotion  | Evaluate model quality and apply an ROC-AUC threshold before promotion.                      |
+| Model artifacts          | Save trained model artifacts and associated metadata.                                        |
+| Prediction API           | Serve predictions through FastAPI endpoints.                                                 |
+| Feature drift monitoring | Use the Population Stability Index (PSI) to identify changes in feature distributions.       |
+| Model observability      | Inspect model information, prediction metrics, and monitoring results through API endpoints. |
+| AI incident analyst      | Optionally use an LLM to interpret monitoring findings and suggest investigation steps.      |
+| CLI workflow             | Run validation, training, model inspection, and monitoring commands from the terminal.       |
+| Container support        | Run the application using Docker and Docker Compose.                                         |
+| Automated testing        | Use pytest and CI workflows to check application behavior.                                   |
+
+## Architecture
+
+SentinelML separates model development, model serving, and monitoring into distinct responsibilities.
+
+```text
+┌─────────────────────────────────────────────────────┐
+│                    User / Developer                 │
+└───────────────────────┬─────────────────────────────┘
+                        │
+              ┌─────────┴─────────┐
+              │                   │
+              ▼                   ▼
+      ┌───────────────┐   ┌────────────────┐
+      │   Python CLI  │   │  Web Dashboard │
+      └───────┬───────┘   └───────┬────────┘
+              │                   │ HTTP
+              ▼                   ▼
+      ┌───────────────┐   ┌────────────────┐
+      │  ML Pipeline  │   │   FastAPI      │
+      │               │   │   Service      │
+      └───────┬───────┘   └───────┬────────┘
+              │                   │
+              ▼                   ▼
+      ┌───────────────┐   ┌────────────────┐
+      │ Model Artifacts│  │ Predictions &  │
+      │ and Evaluation │  │ Monitoring     │
+      └───────────────┘   └───────┬────────┘
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ Drift Analysis  │
+                         │ and Optional AI │
+                         └─────────────────┘
+```
+
+### Technology stack
+
+| Layer                | Technologies            | Responsibility                                                      |
+| -------------------- | ----------------------- | ------------------------------------------------------------------- |
+| Language             | Python                  | ML workflows, validation, CLI, and backend logic                    |
+| Machine learning     | scikit-learn            | Preprocessing, classification, and evaluation                       |
+| Data processing      | pandas, NumPy           | Tabular data handling and numerical operations                      |
+| API                  | FastAPI, Pydantic       | HTTP endpoints and request validation                               |
+| Monitoring           | PSI-based analysis      | Detect feature distribution changes                                 |
+| AI-assisted analysis | OpenAI API, optional    | Interpret monitoring findings                                       |
+| Testing              | pytest                  | Automated tests                                                     |
+| Frontend             | React, TypeScript, Vite | Interactive monitoring console, if included in the current checkout |
+| Deployment           | Docker, Docker Compose  | Containerized execution                                             |
+| Automation           | GitHub Actions          | Continuous integration                                              |
 
-A model that performs well during training is not, by itself, a dependable ML service. A useful delivery workflow also needs input validation, repeatable experiments, evaluation gates, versioned artifacts, a serving interface, and a way to investigate changes in incoming data.
+## How It Works
 
-SentinelML brings those lifecycle concerns into one locally runnable codebase. It includes a Python ML pipeline and FastAPI service alongside a React and TypeScript operations console. The default workflow uses a deterministic synthetic classification dataset so the system can be explored without downloading a private or third-party dataset.
+### 1. Validate the data
 
-Scope and data note
-SentinelML is an engineering and learning project, not a certified production platform. The default model is trained on synthetic data and is not suitable for real-world decisions. Feature drift is a signal to investigate—not proof that model performance has degraded.
+Input data is checked before it enters the training or prediction workflow. Validation helps catch unsuitable inputs early.
 
-Contents
+### 2. Train the model
 
-Design goals
+The training pipeline builds a classification model using scikit-learn. Reproducible configuration and a consistent pipeline help make experiments easier to repeat.
 
-Capabilities
+### 3. Evaluate model quality
 
-System architecture
+The trained model is evaluated using classification metrics, including ROC-AUC.
 
-Model lifecycle
+### 4. Apply the quality gate
 
-Technology stack
+Model promotion depends on whether the configured quality threshold is satisfied. This demonstrates a basic safeguard against promoting a model that fails the required evaluation criterion.
 
-Getting started
+### 5. Serve predictions
 
-Web console
+FastAPI exposes endpoints for model information and inference. Clients can submit supported input data and receive predictions.
 
-CLI reference
+### 6. Monitor feature drift
 
-HTTP API
+The monitoring workflow compares feature distributions against a reference distribution using PSI.
 
-Configuration
+Drift indicates that the input data distribution may have changed. It does **not**, by itself, prove that model accuracy has decreased.
 
-Drift interpretation
+### 7. Investigate incidents
 
-Testing and quality checks
+When enabled and configured with an API key, the optional AI incident analyst can help summarize findings and suggest investigation steps.
 
-Docker
+AI-generated recommendations are advisory and should be verified before operational action.
 
-Repository layout
+## Getting Started
 
-Current limitations
+### Prerequisites
 
-Roadmap
+Install the following:
 
-Contributing
+* Python 3.10 or newer, compatible with the project dependencies
+* Git
+* pip
+* Docker and Docker Compose, if you want to run the containerized version
 
-License
+### 1. Clone the repository
 
-Design goals
-
-SentinelML is built around a few explicit engineering principles:
-
-Validate before training. Reject malformed or invalid data early and explain what failed.
-
-Make training repeatable. Use deterministic data generation and fixed random seeds for comparable local runs.
-
-Separate evaluation from promotion. A candidate must pass a configured metric threshold before it becomes active.
-
-Keep operational signals interpretable. Expose metrics and per-feature drift results rather than hiding the decision behind a single score.
-
-Keep AI advisory-only. The incident analyst can summarize supplied evidence and suggest checks; it cannot promote, retrain, or deploy a model.
-
-Be explicit about limitations. Synthetic data, local artifact storage, and process-local metrics are documented as constraints rather than presented as production infrastructure.
-
-Capabilities
-
-Area
-
-Implemented behavior
-
-Data validation
-
-Required-column checks, numeric-value checks, missing-value checks, and finite-value validation
-
-Training
-
-Reproducible synthetic binary-classification dataset, train/test split, and scikit-learn pipeline
-
-Evaluation
-
-Accuracy, precision, recall, F1, and ROC-AUC metrics
-
-Quality gate
-
-Candidate promotion is blocked when validation fails or ROC-AUC is below SENTINELML_MIN_ROC_AUC
-
-Artifact management
-
-Versioned candidate/model artifacts, metadata, baseline information, and active-model pointer
-
-Prediction service
-
-FastAPI endpoint with request-schema validation and batch inference
-
-Drift monitoring
-
-Population Stability Index (PSI) scores for incoming feature distributions against a reference distribution
-
-Operational metrics
-
-Basic process-local request and latency counters
-
-AI incident analysis
-
-Optional OpenAI-powered, evidence-bounded analysis with read-only recommendations
-
-Web console
-
-React + TypeScript interface for overview metrics, predictions, drift reports, model metadata, and incident analysis
-
-Engineering workflow
-
-CLI, automated tests, Docker, Docker Compose, and GitHub Actions CI configuration
-
-System architecture
-
-                          SENTINELML
-                              │
-                 ┌────────────▼────────────┐
-                 │ Dataset contract checks │
-                 │ numeric / finite values  │
-                 └────────────┬────────────┘
-                              │
-                 ┌────────────▼────────────┐
-                 │ Reproducible training    │
-                 │ held-out evaluation      │
-                 └────────────┬────────────┘
-                              │
-                 ┌────────────▼────────────┐
-                 │ Configurable quality gate│
-                 │ ROC-AUC threshold        │
-                 └────────────┬────────────┘
-                              │ pass
-                 ┌────────────▼────────────┐
-                 │ Versioned model artifact │
-                 │ metadata + active pointer│
-                 └────────────┬────────────┘
-                              │
-                 ┌────────────▼────────────┐
-                 │ FastAPI inference service│
-                 └──────┬───────────┬──────┘
-                        │           │
-              ┌─────────▼───┐  ┌────▼───────────┐
-              │ Predictions │  │ PSI drift report│
-              └─────────────┘  └────┬───────────┘
-                                    │
-                         ┌──────────▼──────────┐
-                         │ Evidence-based report│
-                         │ + optional AI review │
-                         └─────────────────────┘
-
-             React + TypeScript operations console
-                   communicates with the API
-
-The browser console is a presentation and interaction layer; model training, prediction, and drift calculations are performed by the Python service. The optional AI analyst receives evidence from the service and returns recommendations. It is not part of the model-promotion path.
-
-For more detail, see docs/ARCHITECTURE.md and docs/ROADMAP.md.
-
-Model lifecycle
-
-Generate the reproducible sample dataset.
-
-Validate the dataset contract and values.
-
-Train a candidate model and evaluate it on a held-out split.
-
-Compare the recorded ROC-AUC against the configured minimum.
-
-Promote the candidate only if the validation and quality checks pass.
-
-Persist model metadata and the active-model pointer.
-
-Serve predictions and compare incoming feature distributions with the stored reference.
-
-A failed quality gate should not replace the active-model pointer. The current implementation demonstrates this control, but it is not a fully transactional registry: promotion locking, durable remote storage, and automated rollback are not implemented.
-
-Technology stack
-
-Layer
-
-Technologies
-
-Language
-
-Python 3.10+
-
-ML and data
-
-scikit-learn, pandas, NumPy, joblib
-
-API
-
-FastAPI, Pydantic, Uvicorn
-
-Optional AI analysis
-
-OpenAI Python SDK and Responses API
-
-Frontend
-
-React, TypeScript, Vite
-
-UI and charts
-
-IBM Carbon React components, Recharts, Lucide icons
-
-Tests
-
-pytest, HTTPX / FastAPI TestClient
-
-Packaging and delivery
-
-pyproject.toml, Docker, Docker Compose, GitHub Actions
-
-Getting started
-
-Prerequisites
-
-Python 3.10 or newer (Python 3.10 or 3.11 is a good choice for a predictable local setup).
-
-Node.js and npm for the web console.
-
-Git to clone the repository.
-
-Docker Desktop only if you want to use the container workflow.
-
-1. Get the source
-
-git clone <your-repository-url>
+```bash
+git clone https://github.com/aayush-borse/sentinelml.git
 cd sentinelml
+```
 
-Replace <your-repository-url> with the URL of your GitHub repository.
+### 2. Create a virtual environment
 
-2. Create the Python environment
+**Windows PowerShell**
 
-Windows — Command Prompt
-
-py -3.10 -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-
-Windows — PowerShell
-
+```powershell
 py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+```
 
-macOS / Linux
+If Python 3.10 is not installed, use another supported Python version.
 
+**Linux / macOS**
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+Upgrade pip:
+
+```bash
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+```
 
-The editable installation reads the package configuration in pyproject.toml. Installing the dev extra also installs the test dependencies.
+Install the project dependencies:
 
-3. Train and inspect a model
+```bash
+python -m pip install -r requirements.txt
+```
 
+If the repository's `pyproject.toml` defines the package and its build configuration correctly, install the package in editable mode as well:
+
+```bash
+python -m pip install -e .
+```
+
+> If editable installation fails, check the build-system configuration in `pyproject.toml` before proceeding.
+
+### 4. Configure environment variables
+
+If the repository includes `.env.example`, copy it to `.env` and populate the values you need.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Linux / macOS:
+
+```bash
+cp .env.example .env
+```
+
+The AI incident analyst requires a valid OpenAI API key if you want to use that feature. Keep secrets in your local environment; **never commit your `.env` file or API keys**.
+
+If the application does not load `.env` automatically, configure the required environment variables in your shell according to the implementation.
+
+### 5. Run the CLI
+
+With the environment activated and dependencies installed:
+
+```bash
+python -m sentinelml.cli --help
+```
+
+Use the commands shown by the CLI help to validate data, train the model, inspect model information, and run monitoring.
+
+For example, if these commands are exposed by your current CLI:
+
+```bash
 python -m sentinelml.cli validate
 python -m sentinelml.cli train
 python -m sentinelml.cli model-info
+python -m sentinelml.cli monitor
+```
 
-Training creates local artifacts under artifacts/. These generated files are intentionally excluded from Git by default.
+### 6. Start the API
 
-4. Run the test suite
+If the FastAPI application object is exposed as `app` in `sentinelml.api`, run:
 
-python -m pytest -q
-
-5. Start the API
-
+```bash
 uvicorn sentinelml.api:app --reload
+```
 
-Open the interactive API documentation at http://127.0.0.1:8000/docs. Keep this terminal running while using the web console.
+Open the interactive API documentation at:
 
-Web console
+```text
+http://127.0.0.1:8000/docs
+```
 
-The frontend lives in frontend/ and uses Vite during local development. Open a second terminal from the repository root:
+If the module path differs in your checkout, use the actual application import path.
 
-cd frontend
-npm install
-npm run dev
+## API Reference
 
-Open http://127.0.0.1:5173.
+The following endpoints describe the intended API surface. Exact request schemas and response fields are defined by the implementation and can be inspected through `/docs`.
 
-The local Vite configuration proxies /api requests to the backend at http://127.0.0.1:8000. Start the backend before testing live console features.
+| Method | Endpoint         | Purpose                                        |
+| ------ | ---------------- | ---------------------------------------------- |
+| `GET`  | `/health`        | Check API health                               |
+| `GET`  | `/model-info`    | Inspect the current model and its metadata     |
+| `POST` | `/predict`       | Generate predictions for supported input data  |
+| `GET`  | `/monitor/drift` | Retrieve feature drift monitoring results      |
+| `GET`  | `/metrics`       | Retrieve available prediction or model metrics |
 
-The console includes:
+### Example: health check
 
-an overview of model/service information;
+```bash
+curl http://127.0.0.1:8000/health
+```
 
-a prediction playground;
+### Example: inspect the model
 
-a drift-monitoring view using a clearly labelled demo batch;
+```bash
+curl http://127.0.0.1:8000/model-info
+```
 
-model metadata;
+### Example: prediction
 
-optional AI-assisted incident analysis;
+The `/predict` endpoint expects the request body defined by the API's Pydantic schema. Open `/docs` to inspect the required fields and submit a valid request.
 
-persistent dark/light theme preference.
+## Drift Monitoring
 
-Production frontend build
+SentinelML uses the Population Stability Index (PSI) to compare a reference feature distribution with a monitored distribution.
 
-From frontend/:
+PSI is a distribution-change indicator, not a direct measure of predictive performance.
 
-npm run build
+Interpretation thresholds depend on the application and should be calibrated to the data and business context. A drift alert should trigger investigation rather than automatically be treated as proof that the model is failing.
 
-The local Vite proxy is for development. For a deployed frontend, configure VITE_API_BASE_URL to point to the reachable API and configure the API's CORS allowlist—or route both applications through a common origin.
+Useful follow-up checks include:
 
-CLI reference
+* Validate the incoming data schema.
+* Check for missing values and unexpected categories.
+* Investigate upstream data or feature-generation changes.
+* Compare current model performance with a labeled evaluation set when labels become available.
+* Retrain only when the evidence supports it.
 
-Run commands from the repository root with the virtual environment activated.
+## Docker
 
-Command
+If the repository contains a working `Dockerfile` and `docker-compose.yml`, you can use Docker Compose to build and start the configured services:
 
-Purpose
-
-python -m sentinelml.cli validate
-
-Validate the configured sample data workflow
-
-python -m sentinelml.cli train
-
-Generate data, validate, train/evaluate a candidate, apply the quality gate, and write artifacts
-
-python -m sentinelml.cli model-info
-
-Display active model metadata and metrics
-
-python -m sentinelml.cli monitor --input data/sample_inference.csv
-
-Run drift monitoring against a CSV input, if that sample file is present
-
-The monitor command requires a compatible CSV containing the expected feature columns. Use the CLI's validation output and the source schemas to understand the required input shape.
-
-HTTP API
-
-Start the service with uvicorn sentinelml.api:app --reload.
-
-Method
-
-Endpoint
-
-Purpose
-
-GET
-
-/health
-
-Service health and model readiness
-
-GET
-
-/model-info
-
-Active model metadata and evaluation metrics
-
-POST
-
-/predict
-
-Generate predictions and probabilities for a batch
-
-POST
-
-/monitor/drift
-
-Compare submitted feature data with the reference distribution
-
-POST
-
-/ai/analyze
-
-Generate an optional advisory incident analysis from supplied monitoring evidence
-
-GET
-
-/metrics
-
-Return basic process-local request and latency counters
-
-Use the interactive API documentation at /docs to inspect the exact request and response schemas for your current version.
-
-Example prediction request
-
-The default model expects ten numeric features named feature_0 through feature_9.
-
-{
-  "instances": [
-    {
-      "feature_0": 0.25,
-      "feature_1": -0.4,
-      "feature_2": 1.1,
-      "feature_3": 0.7,
-      "feature_4": -0.2,
-      "feature_5": 0.9,
-      "feature_6": 0.1,
-      "feature_7": -0.6,
-      "feature_8": 0.3,
-      "feature_9": 1.2
-    }
-  ]
-}
-
-Submit this payload to POST /predict. Request and response details are available in /docs.
-
-Configuration
-
-Variable
-
-Purpose
-
-Default / behavior
-
-SENTINELML_MIN_ROC_AUC
-
-Minimum ROC-AUC required for model promotion
-
-0.60
-
-OPENAI_API_KEY
-
-Enables the optional AI incident analyst
-
-Required only for /ai/analyze; keep secret and out of Git
-
-OPENAI_MODEL
-
-OpenAI model used for incident analysis
-
-gpt-5-mini
-
-VITE_API_BASE_URL
-
-API base URL for a deployed frontend
-
-Configure for the target deployment; local development uses Vite proxying
-
-Configure the promotion threshold
-
-PowerShell
-
-$env:SENTINELML_MIN_ROC_AUC = "0.70"
-python -m sentinelml.cli train
-
-Command Prompt
-
-set SENTINELML_MIN_ROC_AUC=0.70
-python -m sentinelml.cli train
-
-The threshold is an example policy, not a universally correct quality target. Choose it based on the task, validation design, and consequences of errors.
-
-Enable AI incident analysis (optional)
-
-Set the key in the backend terminal before starting the API.
-
-PowerShell
-
-$env:OPENAI_API_KEY = "your_api_key_here"
-$env:OPENAI_MODEL = "gpt-5-mini"
-uvicorn sentinelml.api:app --reload
-
-Do not paste a real key into source files, commit it to Git, or publish it in logs or screenshots. The analyst is intended to summarize supplied evidence, separate observations from hypotheses, and recommend read-only checks. It does not trigger retraining, promotion, or deployment.
-
-Drift interpretation
-
-SentinelML uses Population Stability Index (PSI) to compare the reference feature distribution with a submitted batch. The current thresholds are heuristic indicators:
-
-PSI
-
-Interpretation in this project
-
-< 0.10
-
-Low distribution shift
-
-0.10–0.20
-
-Moderate distribution shift
-
->= 0.20
-
-Significant distribution shift
-
-PSI depends on binning and the reference data. It does not establish causality or prove that prediction quality has fallen. Investigate the affected features and, when labelled outcomes become available, measure actual model performance before deciding whether retraining is justified.
-
-Testing and quality checks
-
-Run the tests with:
-
-python -m pytest -q
-
-The repository also includes a GitHub Actions workflow under .github/workflows/. Review the workflow file for the exact checks configured for CI. For a frontend build check, run npm run build from frontend/.
-
-Docker
-
-With Docker and the Compose plugin installed, run from the repository root:
-
+```bash
 docker compose up --build
+```
 
-Then open http://127.0.0.1:8000/docs. Docker is a local packaging path; it does not by itself provide cloud deployment, production security, or persistent multi-replica observability.
+Stop the services with:
 
-Repository layout
+```bash
+docker compose down
+```
 
+Review the Compose configuration for exposed ports, environment variables, volumes, and service names before running it.
+
+## Testing
+
+Run the test suite from the repository root:
+
+```bash
+pytest -q
+```
+
+If the project uses Ruff for linting and formatting, run the checks configured in `pyproject.toml`:
+
+```bash
+ruff check .
+ruff format --check .
+```
+
+The exact checks depend on the project's installed development dependencies and configuration.
+
+## Project Structure
+
+The repository is organized around the Python package, tests, configuration, and deployment files.
+
+```text
 sentinelml/
-├── .github/workflows/ci.yml    # CI workflow
+├── .github/
+│   └── workflows/
 ├── docs/
-│   ├── ARCHITECTURE.md         # Architecture and design boundaries
-│   └── ROADMAP.md              # Planned engineering work
-├── frontend/                   # React + TypeScript operations console
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.ts
-├── src/sentinelml/
-│   ├── ai_analyst.py           # Advisory-only LLM analysis
-│   ├── api.py                  # FastAPI routes and request metrics
-│   ├── artifacts.py            # Versioned artifact and promotion logic
-│   ├── cli.py                  # Command-line interface
-│   ├── config.py               # Configuration
-│   ├── data.py                 # Deterministic sample dataset
-│   ├── monitoring.py           # Feature drift analysis
-│   ├── schemas.py              # API request/response schemas
-│   ├── training.py             # Training and evaluation
-│   └── validation.py           # Data contract checks
-├── tests/                      # Automated tests
-├── .env.example                # Example environment configuration
+│   └── assets/
+│       └── sentinelml-banner.png
+├── src/
+│   └── sentinelml/
+│       ├── cli.py
+│       ├── api.py
+│       └── ...
+├── tests/
+├── .env.example
+├── .gitignore
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pyproject.toml
 ├── requirements.txt
 └── README.md
+```
 
-Current limitations
+The exact package modules and frontend directories may vary by branch. Refer to the current repository for the authoritative file structure.
 
-SentinelML intentionally keeps the local demo easy to run. The following are not currently provided as production guarantees:
+## Engineering Principles
 
-Synthetic training data: results demonstrate the pipeline, not real-world predictive value.
+SentinelML is designed to demonstrate several important ML engineering practices:
 
-Local artifact storage: no managed registry or remote object storage is configured.
+* **Reproducibility:** Keep training workflows consistent and repeatable.
+* **Validation before execution:** Catch invalid inputs before they propagate.
+* **Explicit quality gates:** Make model promotion dependent on measurable evaluation criteria.
+* **Separation of concerns:** Keep training, serving, and monitoring responsibilities distinct.
+* **Observable behavior:** Expose useful model and monitoring information.
+* **Testability:** Use automated tests to verify critical behavior.
+* **Secure configuration:** Keep API keys and other secrets outside version control.
+* **Evidence-driven operations:** Treat drift and AI-generated explanations as investigation signals, not unquestionable conclusions.
 
-Non-transactional promotion: no concurrent promotion lock, signed artifact verification, or automated rollback workflow.
+## Current Limitations
 
-Process-local metrics: counters reset when the service restarts and are not shared across replicas.
+SentinelML is a learning and engineering project, not a certified production ML platform.
 
-No API authentication or rate limiting: do not expose the demo API publicly without adding appropriate controls.
+* The default classification dataset is synthetic.
+* Demonstrated model quality does not establish real-world predictive performance.
+* PSI identifies distribution changes but does not prove model degradation.
+* The optional AI analyst depends on external API access and can produce inaccurate recommendations.
+* Production use would require further work on authentication, authorization, deployment security, durable monitoring, alerting, model registry management, rollback, and operational validation.
 
-Heuristic drift alerts: feature distribution changes are not equivalent to model quality loss.
+These limitations are intentional to make the current scope clear and the next engineering priorities explicit.
 
-Optional external AI dependency: incident analysis requires an OpenAI API key and may incur API usage costs; it is not required for core training or inference.
+## Roadmap
 
-No cloud deployment included: Docker support is for packaging and local execution, not evidence of a deployed cloud service.
+Potential future improvements include:
 
-Roadmap
+* [ ] Add support for real-world datasets and repeatable evaluation benchmarks.
+* [ ] Introduce a more comprehensive model registry and artifact lifecycle.
+* [ ] Implement model rollback and promotion history.
+* [ ] Add persistent monitoring history and configurable alerting.
+* [ ] Expand data validation and schema compatibility checks.
+* [ ] Add model performance monitoring when labeled data becomes available.
+* [ ] Strengthen API authentication and deployment security.
+* [ ] Improve integration and end-to-end test coverage.
+* [ ] Expand deployment support and operational documentation.
 
-The next engineering steps are tracked in docs/ROADMAP.md. Areas for further work include:
+## Contributing
 
-MLflow experiment tracking and model registry integration;
+Contributions, bug reports, and suggestions are welcome.
 
-DVC-backed data versioning and lineage;
+1. Fork the repository.
+2. Create a focused feature branch.
+3. Make your changes and add tests where appropriate.
+4. Run the available tests and quality checks.
+5. Open a pull request describing the change and its motivation.
 
-Prometheus metrics and Grafana dashboards;
+For substantial changes, open an issue first to discuss the proposed approach.
 
-atomic promotion, artifact signing, and rollback;
+## License
 
-authentication, rate limiting, and structured logging;
+This project is distributed under the license included in the repository. See [`LICENSE`](LICENSE) for the applicable terms.
 
-temporal and segment-level evaluation, calibration, and fairness checks;
-
-drift evaluation against labelled outcomes, including false-positive analysis;
-
-cloud deployment and infrastructure as code;
-
-structured, evaluated AI incident analysis with evidence references and latency/cost tracking.
-
-These are roadmap items, not claims about current functionality.
-
-Contributing
-
-Contributions, bug reports, and design discussions are welcome. A useful contribution should make its behavior testable and document any new operational assumptions.
-
-Open an issue describing the problem or proposed change.
-
-Keep changes focused and preserve the separation between training, evaluation, promotion, serving, and monitoring.
-
-Add or update tests for behavior changes.
-
-Run python -m pytest -q and, for frontend changes, npm run build from frontend/.
-
-Update the relevant documentation and call out limitations or migration steps.
-
-Please do not submit secrets, private datasets, or generated virtual-environment files.
-
-License
-
-SentinelML is distributed under the MIT License. See LICENSE for details.
+---
 
 <div align="center">
-
-Build models you can inspect. Ship changes you can explain.
-
+  <p><strong>SentinelML</strong></p>
+  <p>Build. Validate. Deploy. Monitor.</p>
+  <sub>Designed to make machine learning workflows more reliable, observable, and reproducible.</sub>
 </div>
