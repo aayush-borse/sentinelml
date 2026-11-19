@@ -66,4 +66,12 @@ def train_model(frame: pd.DataFrame | None = None, output_dir: Path | None = Non
     minimum = MIN_ROC_AUC if minimum_roc_auc is None else minimum_roc_auc
     pointer = promote_candidate(root, metric_name="roc_auc", minimum=minimum)
     metadata["promotion"] = pointer
+    # Persist the promotion info into metadata.json at both the candidate dir
+    # and the promoted models/<version>/ dir so the on-disk record stays in sync.
+    # MODEL_STORE is read via the artifacts module so test monkeypatches apply.
+    import sentinelml.artifacts as _artifacts
+    promoted_dir = _artifacts.MODEL_STORE / metadata["model_version"]
+    metadata_text = json.dumps(metadata, indent=2)
+    (root / "metadata.json").write_text(metadata_text, encoding="utf-8")
+    (promoted_dir / "metadata.json").write_text(metadata_text, encoding="utf-8")
     return metadata

@@ -294,13 +294,14 @@ If the module path differs in your checkout, use the actual application import p
 
 The following endpoints describe the intended API surface. Exact request schemas and response fields are defined by the implementation and can be inspected through `/docs`.
 
-| Method | Endpoint         | Purpose                                        |
-| ------ | ---------------- | ---------------------------------------------- |
-| `GET`  | `/health`        | Check API health                               |
-| `GET`  | `/model-info`    | Inspect the current model and its metadata     |
-| `POST` | `/predict`       | Generate predictions for supported input data  |
-| `GET`  | `/monitor/drift` | Retrieve feature drift monitoring results      |
-| `GET`  | `/metrics`       | Retrieve available prediction or model metrics |
+| Method  | Endpoint         | Purpose                                        |
+| ------- | ---------------- | ---------------------------------------------- |
+| `GET`   | `/health`        | Check API health                               |
+| `GET`   | `/model-info`    | Inspect the current model and its metadata     |
+| `POST`  | `/predict`       | Generate predictions for supported input data  |
+| `POST`  | `/monitor/drift` | Retrieve feature drift monitoring results      |
+| `POST`  | `/ai/analyze`    | Advisory incident analysis (requires `OPENAI_API_KEY`) |
+| `GET`   | `/metrics`       | Retrieve available prediction or model metrics |
 
 ### Example: health check
 

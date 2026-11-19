@@ -43,5 +43,8 @@ def validate_frame(frame: pd.DataFrame, *, require_target: bool = False,
         errors.append(f"Found {non_numeric} non-numeric feature values.")
     if frame.empty:
         errors.append("Dataset is empty.")
+    duplicate_rows = int(frame.duplicated().sum()) if len(frame) else 0
+    if duplicate_rows:
+        errors.append(f"Duplicate rows detected: {duplicate_rows}")
     return ValidationReport(not errors, int(len(frame)), missing_values, non_numeric,
-        int(frame.duplicated().sum()) if len(frame) else 0, missing, unexpected, errors)
+        duplicate_rows, missing, unexpected, errors)
